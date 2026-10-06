@@ -7,7 +7,7 @@ Ask Claude to "put this in Figma" and it builds a file where every text, image a
 own flat layer, colors are real variables, and sections reorder by drag. Claude sets up the parts.
 You make the design calls.
 
-Made by [Claire Mull](https://clairemull.com), a product designer, while building her own
+Made by [Claire Mull](https://clairemull.com), a product and visual designer, while building her own
 portfolio and a shop website with Claude.
 
 ## Two ways in
