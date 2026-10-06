@@ -18,6 +18,10 @@ portfolio and a shop website with Claude.
   package): Claude lays out every real part, styled from a real system, loose on the canvas.
   One plain starting arrangement, never a set of options to pick from.
 
+Phone layouts work the same way at 390 wide, on their own page, so the desktop page is never
+touched. Pages behind a sign-in can be captured too: you sign in once in a real Chrome window,
+and every capture after that runs signed in.
+
 Either way the file ends with an "About this file" card, NEED notes where copy is missing, and a
 screenshot check of every section before Claude reports back.
 

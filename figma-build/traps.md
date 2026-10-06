@@ -39,6 +39,9 @@ Each was hit in a real build. Add new ones the session they happen.
 - Every captured section arrives named "Section (<page title>)", and the node ids do not follow
   the order of `jobs.json`. Match each one by the node id in its own completed
   `generate_figma_design` result (or by height), then rename it before flattening.
+- A capture into a file that already has the color variables arrives with its fills already
+  bound to them. The bind step then binds 0, which is correct, not a failure. Check one fill's
+  `boundVariables` before worrying.
 
 ## Process
 - Screenshot inside `use_figma` with `node.screenshot({scale:0.3})`; several per call is fine.

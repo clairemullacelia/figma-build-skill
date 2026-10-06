@@ -37,6 +37,25 @@ redrawn.
    fonts the cloud lacks throw here: count them and name them in the About card.
 9. Finish per SKILL.md.
 
+## Phone
+
+Same steps at 390 wide:
+
+- Add `"width": 390` to every job in `jobs.json`. The capture runs in a 390 × 844 phone viewport,
+  so the page's own phone CSS applies.
+- The target page is "<name> · Phone"; the column is 390 wide; call `flatten(S, 390)`.
+- Sections keep the desktop section names, so the two pages line up.
+
+## Signed-in pages
+
+The capture browser starts signed out every run. For a page behind an account (app screens):
+
+1. Once: `python3 scripts/shot.py <url> --login --profile ~/.figma-build-profile` opens a
+   visible Chrome. The user signs in themselves (never type their password), then closes the
+   window.
+2. Add `"profile": "<full path to that folder>"` to each job. Every capture then runs signed in.
+3. Check one shot shows the signed-in screen before capturing the rest.
+
 ## Splitting a captured section
 
 Line up the cut by the children list from step 4: everything above the cut y stays in one clone,

@@ -1,6 +1,6 @@
 ---
 name: figma-build
-description: Build a Figma file a designer or a team can edit and drag freely. Two ways in. A thing that already exists (a live page, an app screen) is captured and edited, never redrawn. A loose idea (notes, a brief, a sketch, a doc; a page, menu, poster, package, slide) is laid out as styled loose parts for the designer to arrange. Use when the user says "put this in Figma", "lay this out in Figma", "rebuild the Figma file", or wants an idea set up in Figma.
+description: Build a Figma file a designer or a team can edit and drag freely. Two ways in. A thing that already exists (a live page, an app screen) is captured and edited, never redrawn. A loose idea (notes, a brief, a sketch, a doc; a page, menu, poster, package, slide) is laid out as styled loose parts for the designer to arrange. Use when the user says "put this in Figma", "lay this out in Figma", "rebuild the Figma file", or wants an idea set up in Figma. Phone layouts too: 390 wide, on their own page.
 ---
 
 # figma-build
@@ -20,6 +20,23 @@ Ask it of the request before anything else, and say the answer to the user in on
   [idea.md](idea.md).
 - Both (an existing page with new sections): capture mode for what exists, idea mode for the
   new parts, built from clones of captured parts.
+
+## Phone (390 wide)
+
+Phone is part of this skill. One width: **390**.
+
+- **Its own page**: "<name> · Phone". The desktop page is never touched.
+- **A live page at phone width**: capture mode at 390 (see capture.md, "Phone"). Sections keep
+  the desktop section names.
+- **A page that exists only in Figma**: ask the user each time. Build desktop live and capture
+  the phone, or restack the desktop Figma into a 390 column before any code.
+- **App screens** (a web app, or a mobile app that runs in a browser): capture at 390 × 844
+  signed in, with a saved sign-in (capture.md, "Signed-in pages"). Each screen gets a drawn
+  status bar as its own deletable layer. Parts the phone draws itself (keyboard, share sheet,
+  system alerts) become named empty slots.
+- **A new phone idea**: idea mode, 390 × 844 frame.
+- **Building code from a phone layout**: a phone change must not touch desktop. Media-query
+  overrides only, and desktop proven unchanged at 1440 by screenshot.
 
 ## Rules for both modes
 

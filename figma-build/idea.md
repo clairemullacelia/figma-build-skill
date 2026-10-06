@@ -16,7 +16,7 @@ the design.
    | Medium | Frame |
    |---|---|
    | Web page | 1440 wide, height grows |
-   | Phone screen | 390 × 844 |
+   | Phone screen | 390 × 844, on its own "<name> · Phone" page |
    | Letter / A4 print | 612 × 792 / 595 × 842 (points) |
    | Anything measured in inches | inches × 72, named with the real size ("Menu · 8.5 × 14 in") |
 

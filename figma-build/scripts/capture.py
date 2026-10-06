@@ -5,7 +5,9 @@ Usage:
     python3 capture.py jobs.json
 
 jobs.json is a list of {"url": ..., "selector": ..., "id": ...}: one per section, where id is a
-capture id from the Figma tool `generate_figma_design` (one call per section). The page must be
+capture id from the Figma tool `generate_figma_design` (one call per section). Optional per job:
+"width" (default 1440; 390 for phone, which also gets an 844 high phone viewport) and
+"profile" (a folder from `shot.py --login`, for pages that need a signed-in account). The page must be
 served locally (a production build, e.g. `next start -p 3107`, or `python3 -m http.server`).
 Runs four headless Chromes at once through shot.py --eval (next to this file), which
 injects Figma's capture script; no site source is touched.
@@ -39,8 +41,11 @@ def worker(port):
     while True:
         try: i, j = q.get_nowait()
         except queue.Empty: return
-        p = subprocess.Popen(['python3', SHOT, j['url'], '--wait', '3', '--height', '1200',
-                              '--port', str(port), '--eval', js(j['selector'], j['id'])],
+        w = j.get('width', 1440)
+        args = ['python3', SHOT, j['url'], '--wait', '3', '--width', str(w),
+                '--height', '844' if w < 600 else '1200', '--port', str(port)]
+        if j.get('profile'): args += ['--profile', j['profile']]
+        p = subprocess.Popen(args + ['--eval', js(j['selector'], j['id'])],
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         try: out = p.communicate(timeout=90)[0]
         except subprocess.TimeoutExpired: p.kill(); out = 'timeout'

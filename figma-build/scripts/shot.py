@@ -114,7 +114,7 @@ def sweep_orphans():
                 pass
 
 
-def close(p, profile):
+def close(p, profile, keep=False):
     if p.poll() is None:
         p.terminate()
         try:
@@ -122,17 +122,20 @@ def close(p, profile):
         except subprocess.TimeoutExpired:
             p.kill()
             p.wait()
-    shutil.rmtree(profile, ignore_errors=True)
+    if not keep:
+        shutil.rmtree(profile, ignore_errors=True)
 
 
-def launch(port):
-    profile = f"/tmp/shot-{uuid.uuid4().hex[:8]}"
+def launch(port, keep_profile=None):
+    # keep_profile: a folder that survives between runs, so a sign-in made once with --login
+    # is still there for every later headless shot. Without it, each run starts signed out.
+    profile = keep_profile or f"/tmp/shot-{uuid.uuid4().hex[:8]}"
     p = subprocess.Popen(
         [CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
          f"--remote-debugging-port={port}",
          f"--user-data-dir={profile}", "about:blank"],
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    atexit.register(close, p, profile)
+    atexit.register(close, p, profile, bool(keep_profile))
     for _ in range(100):
         try:
             j = json.load(urllib.request.urlopen(f"http://127.0.0.1:{port}/json/list"))
@@ -141,7 +144,7 @@ def launch(port):
                     return p, t["webSocketDebuggerUrl"], profile
         except Exception:
             time.sleep(0.1)
-    close(p, profile)
+    close(p, profile, bool(keep_profile))
     raise RuntimeError("chrome did not come up")
 
 
@@ -158,19 +161,36 @@ def main():
                                   "trying a treatment without editing the project")
     ap.add_argument("--port", type=int, default=9333)
     ap.add_argument("--wait", type=float, default=1.2)
+    ap.add_argument("--profile", help="a folder to keep the browser's sign-ins in between runs")
+    ap.add_argument("--login", action="store_true",
+                    help="open a VISIBLE Chrome on URL with --profile, so you can sign in once; "
+                         "close that window when done")
     a = ap.parse_args()
+
+    if a.login:
+        if not a.profile:
+            sys.exit("--login needs --profile, or the sign-in is thrown away")
+        os.makedirs(a.profile, exist_ok=True)
+        print("Sign in, then close the Chrome window.")
+        subprocess.run([CHROME, f"--user-data-dir={os.path.abspath(a.profile)}",
+                        "--no-first-run", "--new-window", a.url])
+        return
 
     sweep_orphans()
     # SIGTERM (a timeout) and SIGHUP (a closed terminal) skip `finally`
     # unless they are turned into a normal exit first.
     for sig in (signal.SIGTERM, signal.SIGHUP):
         signal.signal(sig, lambda *_: sys.exit(1))
-    proc, wsurl, profile = launch(a.port)
+    keep = os.path.abspath(a.profile) if a.profile else None
+    if keep:
+        os.makedirs(keep, exist_ok=True)
+    proc, wsurl, profile = launch(a.port, keep)
     try:
         ws = WS(wsurl)
         ws.wait(ws.send("Page.enable"))
         ws.wait(ws.send("Emulation.setDeviceMetricsOverride", width=a.width,
-                        height=a.height, deviceScaleFactor=a.scale, mobile=False))
+                        height=a.height, deviceScaleFactor=a.scale,
+                        mobile=a.width < 600))  # phone widths render as a phone would
         ws.wait(ws.send("Page.navigate", url=a.url))
         time.sleep(a.wait)
 
@@ -214,7 +234,7 @@ def main():
         open(a.out, "wb").write(base64.b64decode(r["result"]["data"]))
         print(f"  ✓  {a.out}")
     finally:
-        close(proc, profile)
+        close(proc, profile, bool(keep))
 
 
 if __name__ == "__main__":
