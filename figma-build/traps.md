@@ -43,3 +43,15 @@ Each was hit in a real build. Add new ones the session they happen.
 ## Process
 - Screenshot inside `use_figma` with `node.screenshot({scale:0.3})`; several per call is fine.
 - Page context resets every call: `await figma.setCurrentPageAsync(page)` at the top of each.
+
+## Reading a file back into code
+- A capture is a picture of the page, not the page. It loses what code does: an overlay, a
+  coded drawing, hover, click-to-enlarge, a fold. For a section that already exists live, build
+  from the live code and apply only the designer's Figma edits. Build from the Figma only what
+  is new.
+- Diff every text layer against the live text before building. A missing row is a question, not
+  an assumption. A layer pushed below its section's clip edge is hidden in Figma but not deleted.
+- Get original images with `download_assets` (`rawImages`), not `get_screenshot`, which returns
+  1x and is capped at the node's size. Match each fill to a local file by pixel size.
+- Deleting a child can reflow a CSS grid that places parts by explicit row. Keep an invisible
+  zero-height placeholder in the removed slot, then screenshot to prove the order.
