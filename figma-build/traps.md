@@ -35,6 +35,11 @@ Each was hit in a real build. Add new ones the session they happen.
   capture, crop with Python (Pillow) or take the shot with `scripts/shot.py --clip-sel`.
 - `sips -Z` ignores EXIF orientation; check portrait photos after resizing.
 
+## Capture
+- Every captured section arrives named "Section (<page title>)", and the node ids do not follow
+  the order of `jobs.json`. Match each one by the node id in its own completed
+  `generate_figma_design` result (or by height), then rename it before flattening.
+
 ## Process
 - Screenshot inside `use_figma` with `node.screenshot({scale:0.3})`; several per call is fine.
 - Page context resets every call: `await figma.setCurrentPageAsync(page)` at the top of each.
